@@ -15,8 +15,8 @@ nonisolated struct ProvectusDocument: FileDocument {
         self.text = text
     }
 
-    static let readableContentTypes = [
-        UTType(importedAs: "com.example.plain-text")
+    static let readableContentTypes: [UTType] = [
+        .plainText
     ]
 
     init(configuration: ReadConfiguration) throws {
@@ -33,3 +33,4 @@ nonisolated struct ProvectusDocument: FileDocument {
         return .init(regularFileWithContents: data)
     }
 }
+

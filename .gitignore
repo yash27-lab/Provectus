@@ -1,0 +1,51 @@
+# ===================
+# Secrets / Environment
+# ===================
+.env
+.env.*
+*.key
+*.pem
+*.p12
+secrets.*
+config.local.*
+
+# ===================
+# macOS + IDE junk
+# ===================
+.DS_Store
+**/.DS_Store
+*.swp
+*.log
+
+# ===================
+# Generated outputs
+# ===================
+*.docx
+*.pdf
+*.csv
+outputs/
+export/
+
+# ===================
+# Large source bundles / uploads
+# ===================
+data/
+source_docs/
+uploads/
+cache/
+
+# ===================
+# Xcode / Swift
+# ===================
+DerivedData/
+*.xcuserstate
+*.xcuserdata/
+xcuserdata/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.hmap
+*.ipa
+*.dSYM
+.build/

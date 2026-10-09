@@ -3,6 +3,11 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testCitationOrdinalBeyondPadding() {
+        let c = Citation(excerptID: "x", documentID: UUID(), pageIndex: 0, ordinal: 1000)
+        XCTAssertEqual(c.id, "CIT-1000")
+    }
+
     func testCitationLabels() {
         let c = Citation(excerptID: "x", documentID: UUID(), pageIndex: 2, ordinal: 7)
         XCTAssertEqual(c.displayLabel, "[CIT-007]")

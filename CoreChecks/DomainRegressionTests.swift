@@ -3,6 +3,13 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testNestedHeadingPaths() {
+        let child = OutputTemplate.Section(id: "c", title: "Child", level: 2, templatePath: "c")
+        let parent = OutputTemplate.Section(id: "p", title: "Parent", level: 1, templatePath: "p", children: [child])
+        XCTAssertEqual(parent.headingPaths(), ["Parent", "Parent > Child"])
+        XCTAssertEqual(parent.flattened.map { $0.id }, ["p", "c"])
+    }
+
     func testUnsupportedSourceType() {
         XCTAssertEqual(SourceDocumentType(fileExtension: "html"), .unknown)
         XCTAssertEqual(SourceDocumentType(mimeType: "text/html"), .unknown)

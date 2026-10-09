@@ -3,6 +3,12 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testUnsupportedSourceType() {
+        XCTAssertEqual(SourceDocumentType(fileExtension: "html"), .unknown)
+        XCTAssertEqual(SourceDocumentType(mimeType: "text/html"), .unknown)
+        XCTAssertEqual(SourceDocumentType.unknown.preferredFileExtension, "dat")
+    }
+
     func testSourceExtensionCase() {
         XCTAssertEqual(SourceDocumentType(fileExtension: "PDF"), .pdf)
         XCTAssertEqual(SourceDocumentType(fileExtension: "DoCx"), .docx)

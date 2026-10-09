@@ -3,6 +3,12 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testSourceExtensionCase() {
+        XCTAssertEqual(SourceDocumentType(fileExtension: "PDF"), .pdf)
+        XCTAssertEqual(SourceDocumentType(fileExtension: "DoCx"), .docx)
+        XCTAssertEqual(SourceDocumentType(fileExtension: nil), .unknown)
+    }
+
     func testCitationOrdinalBeyondPadding() {
         let c = Citation(excerptID: "x", documentID: UUID(), pageIndex: 0, ordinal: 1000)
         XCTAssertEqual(c.id, "CIT-1000")

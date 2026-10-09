@@ -3,6 +3,14 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testPageIdentity() {
+        let id = UUID()
+        let a = SourceExcerpt(documentID: id, pageIndex: 0, text: "same")
+        let b = SourceExcerpt(documentID: id, pageIndex: 1, text: "same")
+        XCTAssertNotEqual(a.id, b.id)
+        XCTAssertEqual(b.pageNumber, 2)
+    }
+
     func testNormalizedHashStability() {
         let id = UUID()
         let a = SourceExcerpt(documentID: id, pageIndex: 0, text: "one two")

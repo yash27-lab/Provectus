@@ -3,6 +3,11 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testWhitespaceNormalization() {
+        let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: "  one\n\t two  ")
+        XCTAssertEqual(e.text, "one two")
+    }
+
     func testPartialCoverage() {
         let link = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "x")
         let report = TraceabilityReport(entries: [TraceabilityEntry(sentenceID: UUID(), sentenceText: "a", links: [link]), TraceabilityEntry(sentenceID: UUID(), sentenceText: "b", links: [])])

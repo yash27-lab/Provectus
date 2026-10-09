@@ -3,6 +3,11 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testShortPreview() {
+        let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: "short excerpt")
+        XCTAssertEqual(e.preview, e.text)
+    }
+
     func testUnicodePreview() {
         let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: String(repeating: "🧬", count: 181))
         XCTAssertEqual(e.preview, String(repeating: "🧬", count: 180) + "…")

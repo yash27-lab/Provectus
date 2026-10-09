@@ -3,6 +3,12 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testCitationLabels() {
+        let c = Citation(excerptID: "x", documentID: UUID(), pageIndex: 2, ordinal: 7)
+        XCTAssertEqual(c.displayLabel, "[CIT-007]")
+        XCTAssertEqual(c.pageNumber, 3)
+    }
+
     func testShortPreview() {
         let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: "short excerpt")
         XCTAssertEqual(e.preview, e.text)

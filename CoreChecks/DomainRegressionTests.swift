@@ -3,6 +3,11 @@ import XCTest
 @testable import ProvectusCore
 
 final class DomainRegressionTests: XCTestCase {
+    func testUnicodePreview() {
+        let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: String(repeating: "🧬", count: 181))
+        XCTAssertEqual(e.preview, String(repeating: "🧬", count: 180) + "…")
+    }
+
     func testPageIdentity() {
         let id = UUID()
         let a = SourceExcerpt(documentID: id, pageIndex: 0, text: "same")

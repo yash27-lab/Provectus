@@ -1,8 +1,41 @@
 import Foundation
-import XCTest
-@testable import ProvectusCore
+// Dependency-free checks run with the production model sources in the same module.
+private func XCTAssertEqual<T: Equatable>(_ actual: T, _ expected: T) {
+    precondition(actual == expected, "Expected \(expected), got \(actual)")
+}
+private func XCTAssertNotEqual<T: Equatable>(_ actual: T, _ expected: T) {
+    precondition(actual != expected, "Values unexpectedly equal")
+}
+private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 
-final class DomainRegressionTests: XCTestCase {
+@main
+final class DomainRegressionTests {
+    static func main() {
+        let checks = DomainRegressionTests()
+        checks.testEmptyCoverage()
+        checks.testPartialCoverage()
+        checks.testWhitespaceNormalization()
+        checks.testNormalizedHashStability()
+        checks.testPageIdentity()
+        checks.testUnicodePreview()
+        checks.testShortPreview()
+        checks.testCitationLabels()
+        checks.testCitationOrdinalBeyondPadding()
+        checks.testSourceExtensionCase()
+        checks.testUnsupportedSourceType()
+        checks.testNestedHeadingPaths()
+        checks.testTemplateCompleteness()
+        print("13 core-model regression checks passed")
+    }
+    func testTemplateCompleteness() {
+        for id in OutputTemplateID.allCases {
+            let template = OutputTemplateLibrary.shared.template(for: id)
+            XCTAssertEqual(template.id, id)
+            XCTAssertFalse(template.flattenedSections.isEmpty)
+            XCTAssertEqual(Set(template.flattenedSections.map { $0.id }).count, template.flattenedSections.count)
+        }
+    }
+
     func testNestedHeadingPaths() {
         let child = OutputTemplate.Section(id: "c", title: "Child", level: 2, templatePath: "c")
         let parent = OutputTemplate.Section(id: "p", title: "Parent", level: 1, templatePath: "p", children: [child])

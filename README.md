@@ -29,5 +29,6 @@ Regulatory teams draft in Word and reviewers need fast verification. This protot
 3. Build & Run
 
 ## Notes
+- Core-model regression checks: run `bash scripts/check-core.sh` on macOS with the Swift command-line tools. These checks cover excerpt identity, Unicode previews, citation labels, traceability arithmetic, source types, and template structure; they do not validate the UI, DOCX exports, or regulatory suitability.
 - Prototype built for demonstrating word-first drafting + traceability workflows.
 - Not intended for real regulatory submissions without validation.

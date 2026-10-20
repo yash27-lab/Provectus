@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testExplicitExportSections()
         checks.testDefaultExportSections()
         checks.testCitationPresence()
         checks.testEmptyExcerpt()
@@ -40,7 +41,7 @@ final class DomainRegressionTests {
         checks.testUnsupportedSourceType()
         checks.testNestedHeadingPaths()
         checks.testTemplateCompleteness()
-        print("13 core-model regression checks passed")
+        print("29 core-model regression checks passed")
     }
     func testMimeParameters() {
         XCTAssertEqual(SourceDocumentType(mimeType: "application/pdf; charset=binary"), .pdf)
@@ -112,6 +113,12 @@ final class DomainRegressionTests {
         let config = DocxExportConfiguration()
         XCTAssertEqual(config.includeTableOfContents, true)
         XCTAssertEqual(config.includeTraceabilityTable, true)
+    }
+
+    func testExplicitExportSections() {
+        let config = DocxExportConfiguration(includeTableOfContents: false, includeTraceabilityTable: false)
+        XCTAssertEqual(config.includeTableOfContents, false)
+        XCTAssertEqual(config.includeTraceabilityTable, false)
     }
 
     func testTemplateCompleteness() {

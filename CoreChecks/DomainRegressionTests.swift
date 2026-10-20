@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testMimeUnknownParameters()
         checks.testMimeLegacyDoc()
         checks.testMimeDocx()
         checks.testMimeCase()
@@ -50,6 +51,10 @@ final class DomainRegressionTests {
 
     func testMimeLegacyDoc() {
         XCTAssertEqual(SourceDocumentType(mimeType: "application/msword; version=1"), .doc)
+    }
+
+    func testMimeUnknownParameters() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "text/html; charset=utf-8"), .unknown)
     }
 
     func testTemplateCompleteness() {

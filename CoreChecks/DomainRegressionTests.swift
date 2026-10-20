@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testCitationPresence()
         checks.testEmptyExcerpt()
         checks.testPreviewExactBoundary()
         checks.testPreferredExtensionRoundtrip()
@@ -97,6 +98,13 @@ final class DomainRegressionTests {
         let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: " \n\t")
         XCTAssertEqual(e.text, "")
         XCTAssertEqual(e.preview, "")
+    }
+
+    func testCitationPresence() {
+        var sentence = DraftSentence(text: "claim", citationIDs: [], order: 0)
+        XCTAssertEqual(sentence.isCited, false)
+        sentence.citationIDs = ["CIT-001"]
+        XCTAssertEqual(sentence.isCited, true)
     }
 
     func testTemplateCompleteness() {

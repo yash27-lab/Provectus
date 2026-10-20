@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testMimeParameters()
         checks.testEmptyCoverage()
         checks.testPartialCoverage()
         checks.testWhitespaceNormalization()
@@ -27,6 +28,10 @@ final class DomainRegressionTests {
         checks.testTemplateCompleteness()
         print("13 core-model regression checks passed")
     }
+    func testMimeParameters() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "application/pdf; charset=binary"), .pdf)
+    }
+
     func testTemplateCompleteness() {
         for id in OutputTemplateID.allCases {
             let template = OutputTemplateLibrary.shared.template(for: id)

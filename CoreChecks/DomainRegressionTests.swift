@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testPreviewExactBoundary()
         checks.testPreferredExtensionRoundtrip()
         checks.testExtensionUnknown()
         checks.testExtensionDoc()
@@ -84,6 +85,11 @@ final class DomainRegressionTests {
         for type in [SourceDocumentType.pdf, .docx, .doc] {
             XCTAssertEqual(SourceDocumentType(fileExtension: type.preferredFileExtension), type)
         }
+    }
+
+    func testPreviewExactBoundary() {
+        let text = String(repeating: "a", count: 180)
+        XCTAssertEqual(SourceExcerpt(documentID: UUID(), pageIndex: 0, text: text).preview, text)
     }
 
     func testTemplateCompleteness() {

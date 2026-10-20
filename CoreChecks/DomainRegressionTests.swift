@@ -12,6 +12,22 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testExplicitExportSections()
+        checks.testDefaultExportSections()
+        checks.testCitationPresence()
+        checks.testEmptyExcerpt()
+        checks.testPreviewExactBoundary()
+        checks.testPreferredExtensionRoundtrip()
+        checks.testExtensionUnknown()
+        checks.testExtensionDoc()
+        checks.testExtensionWhitespace()
+        checks.testEmptyMime()
+        checks.testMimeUnknownParameters()
+        checks.testMimeLegacyDoc()
+        checks.testMimeDocx()
+        checks.testMimeCase()
+        checks.testMimeWhitespace()
+        checks.testMimeParameters()
         checks.testEmptyCoverage()
         checks.testPartialCoverage()
         checks.testWhitespaceNormalization()
@@ -25,8 +41,86 @@ final class DomainRegressionTests {
         checks.testUnsupportedSourceType()
         checks.testNestedHeadingPaths()
         checks.testTemplateCompleteness()
-        print("13 core-model regression checks passed")
+        print("29 core-model regression checks passed")
     }
+    func testMimeParameters() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "application/pdf; charset=binary"), .pdf)
+    }
+
+    func testMimeWhitespace() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "  application/pdf\n"), .pdf)
+    }
+
+    func testMimeCase() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "APPLICATION/PDF"), .pdf)
+    }
+
+    func testMimeDocx() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document; version=1"), .docx)
+    }
+
+    func testMimeLegacyDoc() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "application/msword; version=1"), .doc)
+    }
+
+    func testMimeUnknownParameters() {
+        XCTAssertEqual(SourceDocumentType(mimeType: "text/html; charset=utf-8"), .unknown)
+    }
+
+    func testEmptyMime() {
+        XCTAssertEqual(SourceDocumentType(mimeType: ""), .unknown)
+        XCTAssertEqual(SourceDocumentType(mimeType: "; charset=x"), .unknown)
+    }
+
+    func testExtensionWhitespace() {
+        XCTAssertEqual(SourceDocumentType(fileExtension: " \nPDF\t"), .pdf)
+    }
+
+    func testExtensionDoc() {
+        XCTAssertEqual(SourceDocumentType(fileExtension: " DOC "), .doc)
+    }
+
+    func testExtensionUnknown() {
+        XCTAssertEqual(SourceDocumentType(fileExtension: " "), .unknown)
+        XCTAssertEqual(SourceDocumentType(fileExtension: "pdf.exe"), .unknown)
+    }
+
+    func testPreferredExtensionRoundtrip() {
+        for type in [SourceDocumentType.pdf, .docx, .doc] {
+            XCTAssertEqual(SourceDocumentType(fileExtension: type.preferredFileExtension), type)
+        }
+    }
+
+    func testPreviewExactBoundary() {
+        let text = String(repeating: "a", count: 180)
+        XCTAssertEqual(SourceExcerpt(documentID: UUID(), pageIndex: 0, text: text).preview, text)
+    }
+
+    func testEmptyExcerpt() {
+        let e = SourceExcerpt(documentID: UUID(), pageIndex: 0, text: " \n\t")
+        XCTAssertEqual(e.text, "")
+        XCTAssertEqual(e.preview, "")
+    }
+
+    func testCitationPresence() {
+        var sentence = DraftSentence(text: "claim", citationIDs: [], order: 0)
+        XCTAssertEqual(sentence.isCited, false)
+        sentence.citationIDs = ["CIT-001"]
+        XCTAssertEqual(sentence.isCited, true)
+    }
+
+    func testDefaultExportSections() {
+        let config = DocxExportConfiguration()
+        XCTAssertEqual(config.includeTableOfContents, true)
+        XCTAssertEqual(config.includeTraceabilityTable, true)
+    }
+
+    func testExplicitExportSections() {
+        let config = DocxExportConfiguration(includeTableOfContents: false, includeTraceabilityTable: false)
+        XCTAssertEqual(config.includeTableOfContents, false)
+        XCTAssertEqual(config.includeTraceabilityTable, false)
+    }
+
     func testTemplateCompleteness() {
         for id in OutputTemplateID.allCases {
             let template = OutputTemplateLibrary.shared.template(for: id)

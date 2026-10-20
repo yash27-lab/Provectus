@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testExtensionDoc()
         checks.testExtensionWhitespace()
         checks.testEmptyMime()
         checks.testMimeUnknownParameters()
@@ -66,6 +67,10 @@ final class DomainRegressionTests {
 
     func testExtensionWhitespace() {
         XCTAssertEqual(SourceDocumentType(fileExtension: " \nPDF\t"), .pdf)
+    }
+
+    func testExtensionDoc() {
+        XCTAssertEqual(SourceDocumentType(fileExtension: " DOC "), .doc)
     }
 
     func testTemplateCompleteness() {

@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testDefaultExportSections()
         checks.testCitationPresence()
         checks.testEmptyExcerpt()
         checks.testPreviewExactBoundary()
@@ -105,6 +106,12 @@ final class DomainRegressionTests {
         XCTAssertEqual(sentence.isCited, false)
         sentence.citationIDs = ["CIT-001"]
         XCTAssertEqual(sentence.isCited, true)
+    }
+
+    func testDefaultExportSections() {
+        let config = DocxExportConfiguration()
+        XCTAssertEqual(config.includeTableOfContents, true)
+        XCTAssertEqual(config.includeTraceabilityTable, true)
     }
 
     func testTemplateCompleteness() {

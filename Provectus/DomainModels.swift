@@ -37,7 +37,9 @@ enum SourceDocumentType: String, CaseIterable, Hashable {
     }
 
     init(mimeType: String) {
-        switch mimeType.lowercased() {
+        let mediaType = mimeType.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: false)[0]
+            .trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        switch mediaType {
         case "application/pdf": self = .pdf
         case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": self = .docx
         case "application/msword": self = .doc

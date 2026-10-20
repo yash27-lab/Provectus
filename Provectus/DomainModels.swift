@@ -24,7 +24,7 @@ enum SourceDocumentType: String, CaseIterable, Hashable {
     case unknown
 
     init(fileExtension: String?) {
-        guard let ext = fileExtension?.lowercased() else {
+        guard let ext = fileExtension?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
             self = .unknown
             return
         }

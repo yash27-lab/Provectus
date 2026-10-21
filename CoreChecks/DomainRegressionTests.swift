@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testLeafSection()
         checks.testSentenceMetadata()
         checks.testLinkCitationIdentity()
         checks.testLinkExcerptIdentity()
@@ -168,6 +169,12 @@ final class DomainRegressionTests {
         let sentence = DraftSentence(text: "claim", citationIDs: [], order: 3, metadata: ["review": "pending"])
         XCTAssertEqual(sentence.metadata["review"], "pending")
         XCTAssertEqual(sentence.order, 3)
+    }
+
+    func testLeafSection() {
+        let section = DraftSection(templatePath: "1", title: "Leaf", level: 1, sentences: [])
+        XCTAssertEqual(section.flattenedSections.map { $0.id }, [section.id])
+        XCTAssertEqual(section.allSentences.count, 0)
     }
 
     func testTemplateCompleteness() {

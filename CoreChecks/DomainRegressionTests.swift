@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testLintLocationIdentity()
         checks.testSourceImportTimestamp()
         checks.testHeadingPathPrefix()
         checks.testSiblingSectionOrder()
@@ -53,7 +54,7 @@ final class DomainRegressionTests {
         checks.testUnsupportedSourceType()
         checks.testNestedHeadingPaths()
         checks.testTemplateCompleteness()
-        print("29 core-model regression checks passed")
+        print("42 core-model regression checks passed")
     }
     func testMimeParameters() {
         XCTAssertEqual(SourceDocumentType(mimeType: "application/pdf; charset=binary"), .pdf)
@@ -206,6 +207,15 @@ final class DomainRegressionTests {
         let document = SourceDocument(displayName: "source", type: .pdf, importedAt: date, excerpts: [], invalidExcerptCount: 2)
         XCTAssertEqual(document.importedAt, date)
         XCTAssertEqual(document.invalidExcerptCount, 2)
+    }
+
+    func testLintLocationIdentity() {
+        let section = UUID()
+        let sentence = UUID()
+        let lint = RegulatoryLint(severity: .warning, kind: .missingCitation, message: "review", sectionID: section, sentenceID: sentence)
+        XCTAssertEqual(lint.sectionID, section)
+        XCTAssertEqual(lint.sentenceID, sentence)
+        XCTAssertEqual(lint.kind, .missingCitation)
     }
 
     func testTemplateCompleteness() {

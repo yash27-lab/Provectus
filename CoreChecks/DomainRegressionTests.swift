@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testSourceImportTimestamp()
         checks.testHeadingPathPrefix()
         checks.testSiblingSectionOrder()
         checks.testNestedSentenceOrder()
@@ -198,6 +199,13 @@ final class DomainRegressionTests {
     func testHeadingPathPrefix() {
         let section = OutputTemplate.Section(id: "a", title: "Child", level: 2, templatePath: "1.1")
         XCTAssertEqual(section.headingPaths(currentPath: ["Root"]), ["Root > Child"])
+    }
+
+    func testSourceImportTimestamp() {
+        let date = Date(timeIntervalSince1970: 12345)
+        let document = SourceDocument(displayName: "source", type: .pdf, importedAt: date, excerpts: [], invalidExcerptCount: 2)
+        XCTAssertEqual(document.importedAt, date)
+        XCTAssertEqual(document.invalidExcerptCount, 2)
     }
 
     func testTemplateCompleteness() {

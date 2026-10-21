@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testSentenceMetadata()
         checks.testLinkCitationIdentity()
         checks.testLinkExcerptIdentity()
         checks.testTraceabilitySentenceIdentity()
@@ -161,6 +162,12 @@ final class DomainRegressionTests {
         let a = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "a")
         let b = TraceabilityLink(citationID: "CIT-002", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "a")
         XCTAssertNotEqual(a.id, b.id)
+    }
+
+    func testSentenceMetadata() {
+        let sentence = DraftSentence(text: "claim", citationIDs: [], order: 3, metadata: ["review": "pending"])
+        XCTAssertEqual(sentence.metadata["review"], "pending")
+        XCTAssertEqual(sentence.order, 3)
     }
 
     func testTemplateCompleteness() {

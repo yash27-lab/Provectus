@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testNestedSentenceOrder()
         checks.testLeafSection()
         checks.testSentenceMetadata()
         checks.testLinkCitationIdentity()
@@ -175,6 +176,14 @@ final class DomainRegressionTests {
         let section = DraftSection(templatePath: "1", title: "Leaf", level: 1, sentences: [])
         XCTAssertEqual(section.flattenedSections.map { $0.id }, [section.id])
         XCTAssertEqual(section.allSentences.count, 0)
+    }
+
+    func testNestedSentenceOrder() {
+        let a = DraftSentence(text: "parent", citationIDs: [], order: 0)
+        let b = DraftSentence(text: "child", citationIDs: [], order: 1)
+        let child = DraftSection(templatePath: "1.1", title: "Child", level: 2, sentences: [b])
+        let root = DraftSection(templatePath: "1", title: "Root", level: 1, sentences: [a], children: [child])
+        XCTAssertEqual(root.allSentences.map { $0.text }, ["parent", "child"])
     }
 
     func testTemplateCompleteness() {

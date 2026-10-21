@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testHeadingPathPrefix()
         checks.testSiblingSectionOrder()
         checks.testNestedSentenceOrder()
         checks.testLeafSection()
@@ -192,6 +193,11 @@ final class DomainRegressionTests {
         let b = DraftSection(templatePath: "1.2", title: "B", level: 2, sentences: [])
         let root = DraftSection(templatePath: "1", title: "Root", level: 1, sentences: [], children: [a, b])
         XCTAssertEqual(root.flattenedSections.map { $0.title }, ["Root", "A", "B"])
+    }
+
+    func testHeadingPathPrefix() {
+        let section = OutputTemplate.Section(id: "a", title: "Child", level: 2, templatePath: "1.1")
+        XCTAssertEqual(section.headingPaths(currentPath: ["Root"]), ["Root > Child"])
     }
 
     func testTemplateCompleteness() {

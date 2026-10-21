@@ -12,6 +12,19 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testLintLocationIdentity()
+        checks.testSourceImportTimestamp()
+        checks.testHeadingPathPrefix()
+        checks.testSiblingSectionOrder()
+        checks.testNestedSentenceOrder()
+        checks.testLeafSection()
+        checks.testSentenceMetadata()
+        checks.testLinkCitationIdentity()
+        checks.testLinkExcerptIdentity()
+        checks.testTraceabilitySentenceIdentity()
+        checks.testMultipleLinksCoverage()
+        checks.testFullCoverage()
+        checks.testUncitedCoverage()
         checks.testExplicitExportSections()
         checks.testDefaultExportSections()
         checks.testCitationPresence()
@@ -41,7 +54,7 @@ final class DomainRegressionTests {
         checks.testUnsupportedSourceType()
         checks.testNestedHeadingPaths()
         checks.testTemplateCompleteness()
-        print("29 core-model regression checks passed")
+        print("42 core-model regression checks passed")
     }
     func testMimeParameters() {
         XCTAssertEqual(SourceDocumentType(mimeType: "application/pdf; charset=binary"), .pdf)
@@ -119,6 +132,90 @@ final class DomainRegressionTests {
         let config = DocxExportConfiguration(includeTableOfContents: false, includeTraceabilityTable: false)
         XCTAssertEqual(config.includeTableOfContents, false)
         XCTAssertEqual(config.includeTraceabilityTable, false)
+    }
+
+    func testUncitedCoverage() {
+        let report = TraceabilityReport(entries: [TraceabilityEntry(sentenceID: UUID(), sentenceText: "claim", links: [])])
+        XCTAssertEqual(report.coverageFraction, 0)
+    }
+
+    func testFullCoverage() {
+        let link = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "text", excerptID: "e")
+        let report = TraceabilityReport(entries: [TraceabilityEntry(sentenceID: UUID(), sentenceText: "claim", links: [link])])
+        XCTAssertEqual(report.coveragePercentage, 100)
+    }
+
+    func testMultipleLinksCoverage() {
+        let link = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "text", excerptID: "e")
+        let report = TraceabilityReport(entries: [TraceabilityEntry(sentenceID: UUID(), sentenceText: "claim", links: [link, link])])
+        XCTAssertEqual(report.coverageFraction, 1)
+    }
+
+    func testTraceabilitySentenceIdentity() {
+        let id = UUID()
+        let entry = TraceabilityEntry(sentenceID: id, sentenceText: "claim", links: [])
+        XCTAssertEqual(entry.id, id)
+        XCTAssertEqual(entry.sentenceText, "claim")
+    }
+
+    func testLinkExcerptIdentity() {
+        let a = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "a")
+        let b = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "b")
+        XCTAssertNotEqual(a.id, b.id)
+    }
+
+    func testLinkCitationIdentity() {
+        let a = TraceabilityLink(citationID: "CIT-001", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "a")
+        let b = TraceabilityLink(citationID: "CIT-002", documentName: "source", pageNumber: 1, excerptPreview: "x", excerptID: "a")
+        XCTAssertNotEqual(a.id, b.id)
+    }
+
+    func testSentenceMetadata() {
+        let sentence = DraftSentence(text: "claim", citationIDs: [], order: 3, metadata: ["review": "pending"])
+        XCTAssertEqual(sentence.metadata["review"], "pending")
+        XCTAssertEqual(sentence.order, 3)
+    }
+
+    func testLeafSection() {
+        let section = DraftSection(templatePath: "1", title: "Leaf", level: 1, sentences: [])
+        XCTAssertEqual(section.flattenedSections.map { $0.id }, [section.id])
+        XCTAssertEqual(section.allSentences.count, 0)
+    }
+
+    func testNestedSentenceOrder() {
+        let a = DraftSentence(text: "parent", citationIDs: [], order: 0)
+        let b = DraftSentence(text: "child", citationIDs: [], order: 1)
+        let child = DraftSection(templatePath: "1.1", title: "Child", level: 2, sentences: [b])
+        let root = DraftSection(templatePath: "1", title: "Root", level: 1, sentences: [a], children: [child])
+        XCTAssertEqual(root.allSentences.map { $0.text }, ["parent", "child"])
+    }
+
+    func testSiblingSectionOrder() {
+        let a = DraftSection(templatePath: "1.1", title: "A", level: 2, sentences: [])
+        let b = DraftSection(templatePath: "1.2", title: "B", level: 2, sentences: [])
+        let root = DraftSection(templatePath: "1", title: "Root", level: 1, sentences: [], children: [a, b])
+        XCTAssertEqual(root.flattenedSections.map { $0.title }, ["Root", "A", "B"])
+    }
+
+    func testHeadingPathPrefix() {
+        let section = OutputTemplate.Section(id: "a", title: "Child", level: 2, templatePath: "1.1")
+        XCTAssertEqual(section.headingPaths(currentPath: ["Root"]), ["Root > Child"])
+    }
+
+    func testSourceImportTimestamp() {
+        let date = Date(timeIntervalSince1970: 12345)
+        let document = SourceDocument(displayName: "source", type: .pdf, importedAt: date, excerpts: [], invalidExcerptCount: 2)
+        XCTAssertEqual(document.importedAt, date)
+        XCTAssertEqual(document.invalidExcerptCount, 2)
+    }
+
+    func testLintLocationIdentity() {
+        let section = UUID()
+        let sentence = UUID()
+        let lint = RegulatoryLint(severity: .warning, kind: .missingCitation, message: "review", sectionID: section, sentenceID: sentence)
+        XCTAssertEqual(lint.sectionID, section)
+        XCTAssertEqual(lint.sentenceID, sentence)
+        XCTAssertEqual(lint.kind, .missingCitation)
     }
 
     func testTemplateCompleteness() {

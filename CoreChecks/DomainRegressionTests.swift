@@ -12,6 +12,7 @@ private func XCTAssertFalse(_ actual: Bool) { precondition(!actual) }
 final class DomainRegressionTests {
     static func main() {
         let checks = DomainRegressionTests()
+        checks.testUncitedCoverage()
         checks.testExplicitExportSections()
         checks.testDefaultExportSections()
         checks.testCitationPresence()
@@ -119,6 +120,11 @@ final class DomainRegressionTests {
         let config = DocxExportConfiguration(includeTableOfContents: false, includeTraceabilityTable: false)
         XCTAssertEqual(config.includeTableOfContents, false)
         XCTAssertEqual(config.includeTraceabilityTable, false)
+    }
+
+    func testUncitedCoverage() {
+        let report = TraceabilityReport(entries: [TraceabilityEntry(sentenceID: UUID(), sentenceText: "claim", links: [])])
+        XCTAssertEqual(report.coverageFraction, 0)
     }
 
     func testTemplateCompleteness() {
